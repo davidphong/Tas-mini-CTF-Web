@@ -1,0 +1,29 @@
+version: '3.0'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DB: blog_db
+    command: sh -c "sleep 5 && python initdb.py && python app.py"
+    depends_on:
+      - db
+    restart: always
+    command: sh -c "./start.sh"
+    networks:
+      - internal_network
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d/:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: blog_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
